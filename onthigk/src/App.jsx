@@ -2,34 +2,30 @@ import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
-  const [userID, setUserID] = useState("");
+  const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
-  const [error, setError] = useState(null);
+  const [filterData, setFilterData] = useState([]);
   useEffect(() => {
     const fetchdata = async () => {
-      setError(null);
-      try {
-        const res = await fetch(`https://jsonplaceholder.typicode.com/users/${userID}`);
-        if (!res.ok) throw new Error("user not found");
-        const data = await res.json();
-        setData(data);
-      } catch (error) {
-        setError(error);
-      }
+      const res = await fetch("https://jsonplaceholder.typicode.com/posts");
+      const data = await res.json();
+      setData(data);
     }
     fetchdata();
-  }, [userID]);
+  }, []);
+
+  useEffect(() => {
+    const result = data.filter((data) => data.title.toLowerCase().includes(search.toLowerCase()));
+    setFilterData(result);
+  }, [search]);
   return (
     <div>
-      <input type="text" value={userID} onChange={(e) => setUserID(e.target.value)} />
-      {error && <p style={{ color: "red" }}>{error.message}</p>}
-      {!error && data && (
-        <div key={data.id}>
-          <p>{data.name}</p>
-          <p>{data.phone}</p>
-          <p>{data.website}</p>
+      <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} />
+      {filterData.map((item) => (
+        <div key={item.id}>
+          <p>{item.title}</p>
         </div>
-      )}
+      ))}
     </div>
   )
 }
