@@ -4,9 +4,12 @@ import './App.css'
 function App() {
   const [data, setData] = useState([]);
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then((res) => res.json())
-      .then((data) => setData(data));
+    const fetchdata = async () => {
+      const res = await fetch("https://jsonplaceholder.typicode.com/users");
+      const data = await res.json();
+      setData(data);
+    }
+    fetchdata();
   }, [])
   return (
     <>
