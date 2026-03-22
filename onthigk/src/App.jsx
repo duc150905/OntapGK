@@ -2,41 +2,35 @@ import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
+  const [userID, setUserID] = useState("");
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   useEffect(() => {
     const fetchdata = async () => {
       setError(null);
       try {
-        const res = await fetch("https://jsonplaceholder.typicode.com/users");
-        if (!res.ok) throw new Error("API lỗi");
+        const res = await fetch(`https://jsonplaceholder.typicode.com/users/${userID}`);
+        if (!res.ok) throw new Error("user not found");
         const data = await res.json();
         setData(data);
       } catch (error) {
         setError(error);
-      } finally {
-        setLoading(false);
       }
     }
-    setTimeout(() => {
-      fetchdata();
-    }, 2000);
-
-  }, [])
+    fetchdata();
+  }, [userID]);
   return (
-    <>
-      {loading && <h1>Loading...</h1>}
-      {error && <h1 style={{ color: "red" }}>{error.message}</h1>}
-      {!loading && !error && data && (
-        data.map((item) => (
-          <div key={item.id}>
-            <p>{item.name}</p>
-            <p>{item.email}</p>
-          </div>
-        ))
+    <div>
+      <input type="text" value={userID} onChange={(e) => setUserID(e.target.value)} />
+      {error && <p style={{ color: "red" }}>{error.message}</p>}
+      {!error && data && (
+        <div key={data.id}>
+          <p>{data.name}</p>
+          <p>{data.phone}</p>
+          <p>{data.website}</p>
+        </div>
       )}
-    </>
+    </div>
   )
 }
 
